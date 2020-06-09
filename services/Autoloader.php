@@ -2,18 +2,17 @@
 
 
 class Autoloader {
-    protected $prefix = 'Foo\\Bar\\';
-    protected $base_dir = __DIR__ . '/';
-
+    protected $prefix = 'Shop\\';
+    
     public function loadClass(string $className) {
+        $base_dir = $_SERVER['DOCUMENT_ROOT'] . '/../';
         $len = strlen($this->prefix);
-        if (strncmp($this->prefix, $this->class, $len) !== 0) {
+        if (strncmp($this->prefix, $className, $len) !== 0) {
             return;
         }
         $relative_class = substr($className, $len);
-        $file = $this->base_dir . str_replace('\\', '/', $relative_class) . '.php';
-
-        
+        $file = $base_dir . str_replace('\\', '/', $relative_class) . '.php';
+            
         if (file_exists($file)) {
             require $file;
         }
