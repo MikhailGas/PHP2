@@ -1,24 +1,29 @@
 <?php
 namespace Shop\models;
+use Shop\services\Db;
 abstract class ModelDB {
     protected $table;
-    protected $condition;
-    protected $limit;
-    protected $sort;
-    protected $fields;
     protected $db;
-    protected $data;
-
-    public function __construct(){
-        $this->db = new \Shop\services\Db();
-    }
-        
-    public function getData(){
-        $this->db = new \Shop\services\Db();
-        $sql = "SELECT {$this->fields} FROM {$this->table} WHERE {$this->condition} ORDER BY {$this->sort} LIMIT {$this->limit}";
-        $this->data = $this->db->queryData($sql);
-        
-    }
-
+    public $data;
     
+    public function __construct(){
+        $this->db = Db::getInstance();
+        $this->table = $this->getTableName();
+    }
+    
+    public function getById(int $id)
+    {
+        $sql = "SELECT * FROM {$this->table} WHERE id = :id";
+        var_dump($this->db);
+        $this->db->queryOne($sql, ['id' => $id]);
+        return $this;
+    }
+
+    public function getAll()
+    {
+        $sql = "SELECT * FROM {$this->table}";
+        return $this->db->queryAll($sql);
+    }
+
+    abstract function getTableName();
 }

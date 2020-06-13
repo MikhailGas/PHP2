@@ -1,29 +1,44 @@
 <?php
-namespace Shop\services;
-class Db {
-    public $id;
 
-    protected function connect(){
-        include '../config/config.php';
-        static $conn;
-        if(!isset($conn)){
-            $conn = mysqli_connect(
-                $connect['host'], 
-                $connect['user'], 
-                $connect['pass'], 
-                $connect['db'] 
-            );
-        }
-    return $conn;
+namespace Shop\services;
+use \Shop\traits\TSingletone;
+use \PDO;
+
+class Db {
+    use TSingletone;
+    protected $config = [
+        'driver' => 'mysql',
+        'host' => 'localhost',
+        'user' => 'root',
+        'password' => '',
+        'db' => 'shop',
+        'charset' => 'utf8',
+    ];
+    protected $options = [PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,];
+    protected $connection = NULL;
+
+    public function queryAll($sql, $params = []){
+        return $this->query($sql, $params)->fetchAll();
     }
-    protected function execute(string $sql) {
-        return mysqli_query($this->connect(), $sql);
+
+    public function queryOne($sql, $params = []){
+        return $this->queryAll($sql, $params)[0];
     }
-    public function queryData(string $sql){
-        if($sql){
-            
-            return mysqli_fetch_all($this->execute($sql), MYSQLI_ASSOC);
+
+    protected function query($sql, $params){
+        $pdo = $this->getConnect()->prepare($sql);
+        $pdo->execute($params);
+        return $pdo;
+    }
+
+    protected function getDsn() {
+        return sprintf("%s:host=%s;dbname=%s;charset=%s", $this->config['driver'], $this->config['host'], $this->config['db'], $this->config['charset']);
+    }
+
+    protected function getConnect(){
+        if (is_null($this->connection)){
+            $this->connection = new PDO($this->getDsn(), $this->config['user'], $this->config['password'], $this->options);
         }
-       
+        return $this->connection;
     }
 }

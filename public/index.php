@@ -5,5 +5,5 @@ require SERVICES_DIR . 'Autoloader.php';
 
 spl_autoload_register([new Autoloader(), 'loadClass']); 
 
-$product = new \Shop\models\Product(1);
-echo $product->name;
+$product = new \Shop\models\Product();
+var_dump($product->getById(1));
