@@ -7,7 +7,7 @@ trait TSingletone {
     private function __clone(){}
     private function __wakeup(){}
 
-    public function getInstance(){
+    public static function getInstance(){
         if (is_null(static::$instance)){
             static::$instance = new static;
         }
