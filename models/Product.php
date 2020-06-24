@@ -1,27 +1,30 @@
 <?php
 
 namespace Shop\models;
-class Product extends ModelDB{
-    public $id;
-    public $name;
-    public $description;
-    public $price;
-    public $category_id;
 
-    function __construct($id)
+class Product extends Record
+{
+    protected $product;
+    protected $description;
+    protected $price;
+    protected $category_id;
+    protected $brand_id;
+    
+
+    public function __construct($product = null, $description=null, $price=null, $category_id=null, $brand_id=null)
     {
-        $this->table = 'products';
-        $this->condition = "id={$id}";
-        $this->limit = '';
-        $this->sort = '';
-        $this->fields = '*';
-        $this->getData();
-        $this->id = $this->data[0]['id'];
-        $this->name = $this->data[0]['name'];
-        $this->description = $this->data[0]['description'];
-        $this->price = $this->data[0]['price'];
-        $this->category_id = $this->data[0]['category_id'];
+        parent::__construct();
+        $this->product = $product; 
+        $this->description = $description;
+        $this->price = $price;
+        $this->category_id = $category_id;
+        $this->brand_id = $brand_id;
+
+        
     }
 
-    
+    protected static function getTablename()
+    {
+        return 'products';
+    }
 }
