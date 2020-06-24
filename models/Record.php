@@ -5,13 +5,24 @@ namespace Shop\models;
 use Reflection;
 use ReflectionClass;
 use ReflectionProperty;
+use Shop\interfaces\IRecord;
 use Shop\services\Db;
 
-abstract class Record
+abstract class Record implements IRecord
 {
-    protected $id;
-    protected $db;
-    protected $properties;
+    private $id;
+    public $db;
+    public $properties;
+    public $props = [];
+
+    public function __get($prop){
+        return $this->{$prop};    
+    }
+
+    public function __set($prop, $value){
+        $this->$prop = $value;
+        $this->props[] = $prop;
+    }
     
     public function __construct()
     {
@@ -20,8 +31,7 @@ abstract class Record
         foreach($prop as $val){
             $this->properties[$val] = $this->{$val};
         }
-        var_dump($this->product);
-        var_dump($this->properties);
+        
     }
 
     public static function getById(int $id)
@@ -44,31 +54,41 @@ abstract class Record
         $this->db->execute($sql, [':id' => $this->id]);
     }
 
-    public function insert(){
+    public function save(){
         $table = static::getTableName();
-        $prop = $this->getProperties();    
+        $prop = $this->getProperties(); 
         foreach ($prop as $val){
             $columns[] = "`{$val}`";
             $params[":{$val}"] = $this->{$val};
+            $set[] = "{$val}=:{$val}";
         }
 
         $columns = implode(", ", $columns);
         $placeholders = implode(", ", array_keys($params));
-        
-        $sql = "INSERT INTO {$table} ({$columns}) VALUES ({$placeholders})";
-        $this->db->execute($sql, $params);
-        $this->id = $this->db->getLastInsertId();
-    }  
+        $set = implode(", ", $set);
 
-    public function update(){
-        
+        if($this->props) {
+            $sql = "UPDATE {$table} SET {$set} WHERE id=:id";
+            $params[":id"] = $this->id;
+            $this->db->execute($sql, $params);
+        }
+        else{   
+            $sql = "INSERT INTO {$table} ({$columns}) VALUES ({$placeholders})";
+            $this->db->execute($sql, $params);
+            $this->id = $this->db->getLastInsertId();
+        }
     }
 
     protected function getProperties(){
-        $prop_arr = (new ReflectionClass(get_called_class()))->getProperties(ReflectionProperty::IS_PUBLIC);
-        foreach($prop_arr as $val){
-            $prop[] = $val->name;
+        if ($this->props){
+            $prop = $this->props;
+        }else{
+            $prop_arr = (new ReflectionClass(get_called_class()))->getProperties(ReflectionProperty::IS_PROTECTED);
+            foreach($prop_arr as $val){
+                $prop[] = $val->name;
+            }
         }
+        
         return $prop;
     }
     
