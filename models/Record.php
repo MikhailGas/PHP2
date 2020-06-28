@@ -28,10 +28,11 @@ abstract class Record implements IRecord
     {
         $this->db = Db::getInstance();
         $prop = $this->getProperties();
-        foreach($prop as $val){
-            $this->properties[$val] = $this->{$val};
+        if($prop){
+            foreach($prop as $val){
+                $this->properties[$val] = $this->{$val};
+            }
         }
-        
     }
 
     public static function getById(int $id)
@@ -45,7 +46,7 @@ abstract class Record implements IRecord
     {
         $table = static::getTableName();
         $sql = "SELECT * FROM {$table}";
-        return Db::getInstance()->queryAll($sql);
+        return Db::getInstance()->queryAll(get_called_class(), $sql);
     }
 
     public function delete(){
