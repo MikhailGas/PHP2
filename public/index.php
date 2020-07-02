@@ -1,17 +1,19 @@
-
 <?php
+session_start();
 require_once $_SERVER['DOCUMENT_ROOT'] . '/../vendor/autoload.php';
+
+use Shop\models\Login;
 use Shop\models\Product;
 use Shop\models\User;
+use Shop\services\Request;
 
 require $_SERVER['DOCUMENT_ROOT'] . '/../config/config.php';
 require SERVICES_DIR . 'Autoloader.php';
 
 spl_autoload_register([new Autoloader(), 'loadClass']); 
-
-$controllerName = $_GET['c'] ?: 'catalog';
-$actionName = $_GET['a'];
-$params = $_GET['p'];
+$request = new Request();
+$controllerName = $request->getController() ?: 'catalog';
+$actionName = $request->getAction();
 
 $controllerClass = "Shop\controllers\\" . ucfirst($controllerName) . "Controller";
 
@@ -20,14 +22,8 @@ if(class_exists($controllerClass)) {
     $controller->runAction($actionName);
 }
 
-/*$loader = new \Twig\Loader\ArrayLoader([
-    'index' => '<h1>Hello {{ name }}!</h1>',
-]);
-$twig = new \Twig\Environment($loader);
 
-echo $twig->render('index', ['name' => 'Fabien']);
 
-$product = new User ('user1', '12345', 'Vasya', '555-555');
-$product->save();*/
+
 
 

@@ -6,9 +6,12 @@ use Shop\services\Render;
 abstract class Controller{
     protected $defaultAction = 'index';
     protected $action;
+    protected $render;
     
-
-public function runAction($action = null){
+    public function __construct(){
+        $this->render = new Render();
+    }   
+    public function runAction($action = null){
         if(!$action){
             $action = $this->defaultAction;
         }
@@ -20,9 +23,7 @@ public function runAction($action = null){
             echo "Страница не существует";
         }
     }
-public function render($params){
-    return (new Render())->render($this->controllerName, [$this->controllerName => $params, 'header' => $this->header]);
-}
+    
 
 
 }
