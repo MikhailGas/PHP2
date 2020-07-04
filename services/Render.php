@@ -5,6 +5,7 @@ class Render {
     protected $layout = 'main';
 
     public function render($template, $params = []){
+        var_dump($template);
         $content = $this->renderTemplate($template, $params);
         return $this->renderTemplate("layouts/{$this->layout}", ['content' => $content, 'header' => $params['header']]);
     }
