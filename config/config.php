@@ -1,11 +1,21 @@
 <?php
-$base_dir = $_SERVER['DOCUMENT_ROOT'];
 
-define('SERVICES_DIR', $base_dir . '/../services/');
-define('VIEWS_DIR', $base_dir . '/../views/');
+use Shop\services\Db;
 
-$connect = ['host' => 'localhost',
-            'user' => 'root',
-            'password' => '',
-            'db' => 'shop',
-];
+return [
+    'baseDir' => __DIR__ . '/../',
+    'servicesDir' => __DIR__ . '/../services/',
+    'viewsDir' => __DIR__ . '/../views/',
+    'connect' => [
+        'class' => Db::class,
+        'driver' => 'mysql',
+        'host' => 'localhost',
+        'user' => 'root',
+        'password' => '',
+        'db' => 'shop',
+        'charset' => 'utf8',
+    ],
+    'requst' => [
+        'class'
+    ]
+]
